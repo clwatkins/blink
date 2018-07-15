@@ -1,0 +1,333 @@
+service: BlinkBackend
+
+provider:
+  name: aws
+  runtime: python3.6
+  role: arn:aws:iam::058131102242:role/service-role/lambdasearch
+  apiKeys:
+      - blink-backend-key
+  usagePlan:
+    throttle:
+      burstLimit: 200
+      rateLimit: 100
+  cfLogs: true
+  region: eu-west-1
+  stage: prod
+  memorySize: 512
+  logRetentionInDays: 5
+  iamRoleStatements:
+      - Effect: "Allow"
+        Action:
+            - "ec2:CreateNetworkInterface"
+            - "ec2:DescribeNetworkInterfaces"
+            - "ec2:DeleteNetworkInterfaces"
+            - "ec2:DetachNetworkInterface"
+        Resource: "*"
+
+plugins:
+  - serverless-delete-loggroups
+
+package:
+  individually: true
+
+functions:
+  Search:
+    handler: search_handlers.search_photos
+    name: Search
+    events:
+      - http:
+          path: search
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  GetPhotoInfo:
+    handler: search_handlers.get_photo_info
+    name: GetPhotoInfo
+    events:
+      - http:
+          path: getphotoinfo
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  UploadPhoto:
+    handler: user_activity.user_upload_photo
+    name: UploadPhoto
+    events:
+      - http:
+          path: uploadphoto
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  DeletePhoto:
+    handler: user_activity.user_delete_photo
+    name: DeletePhoto
+    events:
+      - http:
+          path: deletephoto
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  LikePhoto:
+    handler: user_activity.user_like_photo
+    name: LikePhoto
+    events:
+      - http:
+          path: likephoto
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  UnlikePhoto:
+    handler: user_activity.user_unlike_photo
+    name: UnlikePhoto
+    events:
+      - http:
+          path: unlikephoto
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  GetUserPoints:
+    handler: redemptions.get_user_points
+    name: GetUserPoints
+    events:
+      - http:
+          path: getuserpoints
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+        - psycopg2/**
+
+  GetCurrentOffers:
+    handler: redemptions.get_current_offers
+    name: GetCurrentOffers
+    events:
+      - http:
+          path: getcurrentoffers
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+        - psycopg2/**
+
+  RedeemOffer:
+    handler: redemptions.redeem_offer
+    name: RedeemOffer
+    events:
+      - http:
+          path: redeemoffer
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+        - psycopg2/**
+
+  SubmitPetition:
+    handler: user_activity.user_submit_petition
+    name: SubmitPetition
+    events:
+      - http:
+          path: submitpetition
+          method: post
+          private: true
+          cors: true
+          integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+        - psycopg2/**
+
+  CreateNewUser:
+    handler: user_management.create_new_user
+    name: CreateNewUser
+    events:
+      - http:
+            path: createnewuser
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  SetUserPreferences:
+    handler: user_management.set_user_preferences
+    name: SetUserPreferences
+    events:
+      - http:
+            path: setuserpreferences
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  GetUserPreferences:
+    handler: user_management.get_user_preferences
+    name: GetUserPreferences
+    events:
+      - http:
+            path: getuserpreferences
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  GetUserPhotos:
+    handler: user_management.get_user_photos
+    name: GetUserPhotos
+    events:
+      - http:
+            path: getuserphotos
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  GetUserLikes:
+    handler: user_management.get_user_likes
+    name: GetUserLikes
+    events:
+      - http:
+            path: getuserlikes
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  UserLogin:
+    handler: user_management.user_session_login
+    name: UserLogin
+    events:
+      - http:
+            path: userlogin
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  UserLeave:
+    handler: user_management.user_session_leave
+    name: UserLeave
+    events:
+      - http:
+            path: userleave
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+
+  RemoveInactiveUsers:
+    handler: api_management.remove_inactive_keys
+    name: RemoveInactiveUsers
+    events:
+        - schedule: rate(10 minutes)
+    package:
+      include:
+        - config.py
+
+  UpdateCloudSearchIndex:
+    handler: cloudsearch_dynamodb_update.update_cloudsearch
+    name: UpdateCloudSearchIndex
+    events:
+      - stream: arn:aws:dynamodb:eu-west-1:058131102242:table/photos_table/stream/2017-02-24T11:15:55.493
+    package:
+      include:
+        - config.py
+
+  UpdateLocationInfo:
+    handler: redemptions.update_location_info
+    name: UpdateLocationInfo
+    events:
+        - schedule: rate(120 minutes)
+        - http:
+            path: updatelocationinfo
+            method: post
+            private: true
+            cors: true
+            integration: LAMBDA-PROXY
+    package:
+      include:
+        - config.py
+        - api_management.py
+        - psycopg2/**
+
+  UpdatePhotoViews:
+    handler: search_handlers.update_photo_views
+    name: UpdatePhotoViews
+    package:
+      include:
+        - config.py
